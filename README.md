@@ -1,12 +1,13 @@
 改进方案1：客户端用JS直接签名，然后上传到OSS 
 
 demo讲述：https://bbs.aliyun.com/read/262307.html?spm=5176.bbsl211.0.0.8gmdkz
+
 测试样例：http://oss-demo.aliyuncs.com/oss-h5-upload-js-direct/index.html   
 
 
 java js改进
 
-　/  uploader初始化代码
+　//uploader初始化代码
 var uploader = new plupload.Uploader({
     runtimes: 'html5,flash,silverlight,html4',
     browse_button: 'selectfiles',
@@ -84,16 +85,14 @@ error: function(XmlHttpRequest, textStatus, errorThrown) {
 }
 })
 
-=================================
-java 后台
+ 
+//java 后台
 
 
-/**
-	 * 获取oss/s3身份验证
-	 */
+ 
 @RequestMapping(value = "getAuthIdentity", method = RequestMethod.GET)
 @ResponseBody 
-public Map < String,String > getOssIdentity(HttpServletRequest request, HttpServletResponse response, String cdn) throws Exception {
+public Map <String,String> getOssIdentity(HttpServletRequest request, HttpServletResponse response, String cdn) throws Exception {
 
 	long expireTime = 30;
 	long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
@@ -110,8 +109,8 @@ public Map < String,String > getOssIdentity(HttpServletRequest request, HttpServ
 	return respMap;
 }
 
-private Map < String,String > identityMap(String accessid, String host, String encodedPolicy, String postSignature) {
-    Map < String,String > respMap = new LinkedHashMap < String,String > ();
+private Map<String,String> identityMap(String accessid, String host, String encodedPolicy, String postSignature) {
+    Map<String,String> respMap = new LinkedHashMap < String,String > ();
     respMap.put("accessid", accessid);
     respMap.put("policy", encodedPolicy);
     respMap.put("signature", postSignature);
