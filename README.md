@@ -60,6 +60,7 @@ var uploader = new plupload.Uploader({
 uploader.init();
 
 //获取签名的ajax和自定义参数　OSS
+ 
 $.ajax({
     type: 'get',
     dataType: 'json',
@@ -67,25 +68,21 @@ $.ajax({
     contentType: false,
     url: 'getAuthIdentity',
     success: function (obj) {
-            //自定义参数
-            uploader.setOption({
-                multipart_params: {
-                                        'key': fileKey,
-                                        'policy': obj.policy,
-                                        'OSSAccessKeyId': obj.accessid,
-                                        'signature': obj.signature,
-                                    },
-                url: obj.host
-            });
-            uploader.start(); //调用实例对象的start()方法开始上传文件，当然你也可以在其他地方调用该方法
-        },
-        error: function (XmlHttpRequest, textStatus, errorThrown) {
-            console.log(errorThrown)
-        }
+            / / 自定义参数uploader.setOption({
+    multipart_params: {
+        'key': fileKey,
+        'policy': obj.policy,
+        'OSSAccessKeyId': obj.accessid,
+        'signature': obj.signature,
+    },
+    url: obj.host
+});
+uploader.start(); //调用实例对象的start()方法开始上传文件，当然你也可以在其他地方调用该方法
+},
+error: function(XmlHttpRequest, textStatus, errorThrown) {
+    console.log(errorThrown)
+}
 })
-
-
-
 
 =================================
 java 后台
@@ -98,20 +95,19 @@ java 后台
 @ResponseBody 
 public Map < String,String > getOssIdentity(HttpServletRequest request, HttpServletResponse response, String cdn) throws Exception {
 
-    long expireTime = 30;
-			long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
-			String host = "http://" + "你的bucket" + ".oss-cn-qingdao.aliyuncs.com" ;
-			PolicyConditions policyConds = new PolicyConditions();
-			policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
-			com.aliyun.oss.OSSClient client = new com.aliyun.oss.OSSClient("oss-cn-qingdao.aliyuncs.com",
-					"你的OSS_ACCESS_ID", "你的OSS_ACCESS_KEY");// 初始化OSS
-			Date expiration = new Date(expireEndTime);
-			String postPolicy = client.generatePostPolicy(expiration, policyConds);
-			byte[] binaryData = postPolicy.getBytes("utf-8");
-			String encodedPolicy = BinaryUtil.toBase64String(binaryData);
-			String postSignature = client.calculatePostSignature(postPolicy);
-			Map<String, String> respMap = identityMap("你的OSS_ACCESS_ID", host, encodedPolicy, postSignature);
-			return respMap;
+	long expireTime = 30;
+	long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+	String host = "http://" + "你的bucket" + ".oss-cn-qingdao.aliyuncs.com";
+	PolicyConditions policyConds = new PolicyConditions();
+	policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
+	com.aliyun.oss.OSSClient client = new com.aliyun.oss.OSSClient("oss-cn-qingdao.aliyuncs.com", "你的OSS_ACCESS_ID", "你的OSS_ACCESS_KEY"); // 初始化OSS
+	Date expiration = new Date(expireEndTime);
+	String postPolicy = client.generatePostPolicy(expiration, policyConds);
+	byte[] binaryData = postPolicy.getBytes("utf-8");
+	String encodedPolicy = BinaryUtil.toBase64String(binaryData);
+	String postSignature = client.calculatePostSignature(postPolicy);
+	Map <String,String> respMap = identityMap("你的OSS_ACCESS_ID", host, encodedPolicy, postSignature);
+	return respMap;
 }
 
 private Map < String,String > identityMap(String accessid, String host, String encodedPolicy, String postSignature) {
